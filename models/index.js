@@ -1,1 +1,1 @@
-console.log('Model Configs');
+module.exports = new (require('@prisma/client').PrismaClient)();
