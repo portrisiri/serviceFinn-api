@@ -7,6 +7,7 @@ const errorMiddleWare = require('./middlewares/error');
 const notFoundMiddleWare = require('./middlewares/not-found');
 const authRoute = require('./routes/auth-route');
 const categoryRoute = require('./routes/category-route');
+const providerRoute = require('./routes/provider-route');
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(cors());
 // Routes
 app.use('/auth', authRoute);
 app.use('category', categoryRoute);
+app.use('/provider', providerRoute);
 
 // Error Handling
 app.use(errorMiddleWare);
