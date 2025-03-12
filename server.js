@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const errorMiddleWare = require('./middlewares/error');
 const notFoundMiddleWare = require('./middlewares/not-found');
+const authRoute = require('./routes/auth-route');
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(morgan('dev'));
 app.use(cors());
 
 // Routes
+app.use('/auth', authRoute);
 
 // Error Handling
 app.use(errorMiddleWare);
