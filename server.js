@@ -6,6 +6,7 @@ require('dotenv').config();
 const errorMiddleWare = require('./middlewares/error');
 const notFoundMiddleWare = require('./middlewares/not-found');
 const authRoute = require('./routes/auth-route');
+const categoryRoute = require('./routes/category-route');
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(cors());
 
 // Routes
 app.use('/auth', authRoute);
+app.use('category', categoryRoute);
 
 // Error Handling
 app.use(errorMiddleWare);
