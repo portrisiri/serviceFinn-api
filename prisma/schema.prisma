@@ -59,6 +59,7 @@ model Category {
   Service      Service[]
 }
 
+
 model Provider {
   providerId                Int            @id @default(autoincrement())
   firstName                 String

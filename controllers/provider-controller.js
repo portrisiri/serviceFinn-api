@@ -24,7 +24,7 @@ providerController.getFilteredProviders = async (req, res, next) => {
     // Construct the filter object
     const filters = {};
 
-    if (categoryId) {
+    if (categorySubCatId) {
       filters.service = {
         some: {
           categorySubCatId: parseInt(categorySubCatId), // Ensure categoryId is a number

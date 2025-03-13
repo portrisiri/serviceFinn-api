@@ -1,8 +1,36 @@
 const serviceController = {};
 
-serviceController.getServices = async (req, res, next) => {
+serviceController.getAllServices = async (req, res, next) => {
   try {
-    // code here
+    
+  } catch (error) {
+    next(error);
+  }
+};
+serviceController.getServiceByid = async (req, res, next) => {
+  try {
+    
+  } catch (error) {
+    next(error);
+  }
+};
+serviceController.createService = async (req, res, next) => {
+  try {
+    
+  } catch (error) {
+    next(error);
+  }
+};
+serviceController.deleteServiceByid = async (req, res, next) => {
+  try {
+    
+  } catch (error) {
+    next(error);
+  }
+};
+serviceController.updateServiceByid = async (req, res, next) => {
+  try {
+    
   } catch (error) {
     next(error);
   }
