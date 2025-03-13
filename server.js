@@ -9,7 +9,11 @@ const authRoute = require('./routes/auth-route');
 const categoryRoute = require('./routes/category-route');
 const providerRoute = require('./routes/provider-route');
 const addressRoute = require('./routes/address-route');
+<<<<<<< HEAD
 const documentRoute = require('./routes/document-route');
+=======
+const serviceRoute = require('./routes/service-route');
+>>>>>>> dev
 
 const app = express();
 
@@ -22,7 +26,11 @@ app.use('/auth', authRoute);
 app.use('category', categoryRoute);
 app.use('/provider', providerRoute);
 app.use('/address', addressRoute);
+<<<<<<< HEAD
 app.use('/document', documentRoute);
+=======
+app.use('/service', serviceRoute);
+>>>>>>> dev
 
 // Error Handling
 app.use(errorMiddleWare);
