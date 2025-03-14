@@ -191,8 +191,8 @@ model Payment {
   paymentDate   DateTime
   paymentMethod String?
   paymentStatus PaymentStatus
-  transactionId String
-  sessionId     String
+  transactionId String?
+  sessionId     String?
   booking       Booking?      @relation(fields: [bookingId], references: [bookingId])
 }
 
