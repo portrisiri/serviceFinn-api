@@ -1,25 +1,27 @@
-const prisma = require('../models/index')
-const { requireAuth } = require('@clerk/express'); 
+const prisma = require('../models/index');
+const { requireAuth } = require('@clerk/express');
 
 const providerController = {};
 
-
+// For Admin
 providerController.getAllProviders = async (req, res, next) => {
   try {
     const providers = await prisma.provider.findMany();
     res.status(200).json({
-      success:true,message:'hello',
-      providers
-    })
+      success: true,
+      message: 'hello',
+      providers,
+    });
   } catch (error) {
     next(error);
   }
 };
 
+// For User
 providerController.getFilteredProviders = async (req, res, next) => {
   try {
     // Extract query parameters for filtering
-    const { categorySubCatId, location } = req.query;
+    const { categorySubCatId, latitude, longitude, radius } = req.query;
 
     // Construct the filter object
     const filters = {};
@@ -45,10 +47,31 @@ providerController.getFilteredProviders = async (req, res, next) => {
       take: 10, // Limit the results to 10 providers
     });
 
+    if (categorySubCatId) {
+      const subCatFilter = `JOIN Service ON Provider.providerId = Service.providerId
+      WHERE Service.categorySubCatId = ${categorySubCatId}`;
+    }
+
+    const results = await prisma.$queryRaw`SELECT 
+           *, 
+            (6371 * acos(
+                cos(radians(${latitude})) 
+                * cos(radians(latitude)) 
+                * cos(radians(longitude) - radians(${longitude})) 
+                + sin(radians(${latitude})) 
+                * sin(radians(latitude))
+            )) AS distance
+          FROM 
+            Provider
+          ${subCatFilter}
+          HAVING 
+            distance < ${radius}
+        `;
+
     res.status(200).json({
       success: true,
       message: 'Providers fetched successfully',
-      providers,
+      results,
     });
   } catch (error) {
     next(error); // Pass error to the error handler
@@ -77,15 +100,16 @@ providerController.getProviderById = async (req, res, next) => {
       provider, // Send the provider data as the response
     });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     next(error); // Pass any error to the error handler
   }
-}
+};
 
 providerController.updateProviderProfile = async (req, res, next) => {
   try {
     const { id } = req.params; // Get providerId from URL params
-    const { firstName, lastName, email, phoneNumber, companyName, profilePicture, skills, availability, location } = req.body;
+    const { firstName, lastName, email, phoneNumber, companyName, profilePicture, skills, availability, location } =
+      req.body;
 
     // Get the current authenticated user ID (from Clerk session)
     const userId = req.auth.userId; // Assuming Clerk middleware is set up
@@ -140,7 +164,6 @@ providerController.updateProviderProfile = async (req, res, next) => {
   }
 };
 
-
 providerController.activateProvider = async (req, res, next) => {
   try {
     const { id } = req.params; // Get providerId from URL params
@@ -190,7 +213,6 @@ providerController.activateProvider = async (req, res, next) => {
   }
 };
 
-
 providerController.deactivateProvider = async (req, res, next) => {
   try {
     const { id } = req.params; // Get providerId from URL params
@@ -239,7 +261,5 @@ providerController.deactivateProvider = async (req, res, next) => {
     next(error); // Pass any error to the error handler
   }
 };
-
-
 
 module.exports = providerController;
