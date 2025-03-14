@@ -35,13 +35,13 @@ model User {
 }
 
 model UserAddress {
-  addressId  Int     @id @default(autoincrement())
-  name       String?
-  address    String?
-  latitude   Decimal
-  longtitude Decimal
-  userId     String
-  user       User    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  addressId Int     @id @default(autoincrement())
+  name      String?
+  address   String?
+  latitude  Decimal
+  longitude Decimal
+  userId    String
+  user      User    @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }
 
 model UserPaymentDetails {
@@ -77,7 +77,7 @@ model Provider {
   profilePicture            String?
   providerRating            Float?
   latitude                  Decimal
-  longtitude                Decimal
+  longitude                 Decimal
   isActive                  Boolean?
   isCompleted               Boolean        @default(false)
   service                   Service[]
@@ -88,15 +88,13 @@ model Provider {
 }
 
 model Service {
-  serviceId        Int       @id @default(autoincrement())
-  providerId       String
-  categoryId       Int
-  serviceName      String
-  price            Decimal?
-  provider         Provider  @relation(fields: [providerId], references: [providerId])
-  booking          Booking[]
-  categorySubCatId Int
-  Category         Category  @relation(fields: [categorySubCatId], references: [subCatId])
+  serviceId  Int       @id @default(autoincrement())
+  providerId String
+  price      Decimal?
+  provider   Provider  @relation(fields: [providerId], references: [providerId])
+  booking    Booking[]
+  subCatId   Int
+  subCatName Category  @relation(fields: [subCatId], references: [subCatId])
 }
 
 model Admin {
@@ -135,7 +133,7 @@ model Booking {
   startTime     DateTime
   endTime       DateTime
   latitude      Decimal
-  longtitude    Decimal
+  longitude     Decimal
   jobScope      String?
   status        JobStatus            @default(PENDING)
   bookingDate   DateTime             @default(now())
@@ -193,7 +191,8 @@ model Payment {
   paymentDate   DateTime
   paymentMethod String?
   paymentStatus PaymentStatus
-  transactionId String
+  transactionId String?
+  sessionId     String?
   booking       Booking?      @relation(fields: [bookingId], references: [bookingId])
 }
 
