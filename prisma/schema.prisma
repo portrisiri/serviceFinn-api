@@ -14,16 +14,16 @@ datasource db {
 }
 
 model User {
-  userId             Int                  @id @default(autoincrement())
+  userId             String               @id
+  role               String               @default("USER")
   firstName          String?
   lastName           String?
   email              String               @unique
-  password           String?
   phoneNumber        String?
   profilePicture     String?
   rating             Float?
   isActive           Boolean?
-  isVerified         Boolean?
+  isCompleted        Boolean?             @default(false)
   lastLogin          DateTime?
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
@@ -35,17 +35,18 @@ model User {
 }
 
 model UserAddress {
-  addressId Int     @id @default(autoincrement())
-  name      String?
-  address   String?
-  location  String?
-  userId    Int
-  user      User    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  addressId  Int     @id @default(autoincrement())
+  name       String?
+  address    String?
+  latitude   Decimal
+  longtitude Decimal
+  userId     String
+  user       User    @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }
 
 model UserPaymentDetails {
   paymentDetailsId Int    @id @default(autoincrement())
-  userId           Int
+  userId           String
   user             User   @relation(fields: [userId], references: [userId])
   type             String
 }
@@ -53,19 +54,19 @@ model UserPaymentDetails {
 model Category {
   categoryId   Int
   categoryName String
+  categoryIcon String
   subCatId     Int          @id
   subCatName   String
   marketRate   MarketRate[]
   Service      Service[]
 }
 
-
 model Provider {
-  providerId                Int            @id @default(autoincrement())
+  providerId                String         @id
+  role                      String         @default("PROVIDER")
   firstName                 String
   lastName                  String
   email                     String         @unique
-  password                  String
   phoneNumber               String
   companyName               String?
   personalVerification      Boolean?       @default(false)
@@ -75,8 +76,10 @@ model Provider {
   availability              String?
   profilePicture            String?
   providerRating            Float?
-  location                  String?
+  latitude                  Decimal
+  longtitude                Decimal
   isActive                  Boolean?
+  isCompleted               Boolean        @default(false)
   service                   Service[]
   booking                   Booking[]
   revieweeRating            RatingReview[] @relation("Reviewee")
@@ -86,7 +89,7 @@ model Provider {
 
 model Service {
   serviceId        Int       @id @default(autoincrement())
-  providerId       Int
+  providerId       String
   categoryId       Int
   serviceName      String
   price            Decimal?
@@ -98,6 +101,7 @@ model Service {
 
 model Admin {
   adminId     Int         @id @default(autoincrement())
+  role        String      @default("ADMIN")
   firstName   String
   lastName    String
   email       String      @unique
@@ -112,23 +116,26 @@ enum JobStatus {
   CONFIRMED
   CANCELLED
   COMPLETED
+  REJECTED
 }
 
 enum BookingPaymentStatus {
   PAID
+  HOLD
   PENDING
 }
 
 model Booking {
   bookingId     Int                  @id @default(autoincrement())
-  userId        Int
-  providerId    Int
+  userId        String
+  providerId    String
   serviceId     Int
   startDate     DateTime
   endDate       DateTime?
   startTime     DateTime
   endTime       DateTime
-  location      String
+  latitude      Decimal
+  longtitude    Decimal
   jobScope      String?
   status        JobStatus            @default(PENDING)
   bookingDate   DateTime             @default(now())
@@ -149,8 +156,8 @@ enum ReviewType {
 
 model RatingReview {
   ratingId    Int        @id @default(autoincrement())
-  reviewerId  Int
-  revieweeId  Int
+  reviewerId  String
+  revieweeId  String
   ratingScore Int
   comment     String?
   image       String?
@@ -176,6 +183,7 @@ enum PaymentStatus {
   PENDING
   SUCCESS
   FAILED
+  REFUNDED
 }
 
 model Payment {
@@ -192,8 +200,8 @@ model Payment {
 model Penalty {
   penaltyId       Int       @id @default(autoincrement())
   bookingId       Int
-  userId          Int
-  providerId      Int
+  userId          String
+  providerId      String
   reason          String?
   dateApplied     DateTime
   penaltyDuration Int
@@ -240,7 +248,7 @@ model Documents {
   docId      Int            @id @default(autoincrement())
   type       DocumentType
   url        String
-  providerId Int
+  providerId String
   provider   Provider       @relation(fields: [providerId], references: [providerId], onDelete: Cascade)
   createdAt  DateTime       @default(now())
   approval   ApprovalStatus @default(PENDING)
