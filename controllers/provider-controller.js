@@ -22,7 +22,7 @@ providerController.getFilteredProviders = async (req, res, next) => {
   try {
     // Extract query parameters for filtering
     const { categorySubCatId, latitude, longitude, radius } = req.query;
-
+    console.log(categorySubCatId);
     // Construct the filter object
     const filters = {};
 
@@ -34,9 +34,9 @@ providerController.getFilteredProviders = async (req, res, next) => {
       };
     }
 
-    if (location) {
-      filters.location = location;
-    }
+    // if (location) {
+    //   filters.location = location;
+    // }
 
     // Fetch providers with the applied filters
     const providers = await prisma.provider.findMany({
@@ -47,25 +47,21 @@ providerController.getFilteredProviders = async (req, res, next) => {
       take: 10, // Limit the results to 10 providers
     });
 
-    if (categorySubCatId) {
-      const subCatFilter = `JOIN Service ON Provider.providerId = Service.providerId
-      WHERE Service.categorySubCatId = ${categorySubCatId}`;
-    }
-
     const results = await prisma.$queryRaw`SELECT 
            *, 
             (6371 * acos(
                 cos(radians(${latitude})) 
                 * cos(radians(latitude)) 
-                * cos(radians(longitude) - radians(${longitude})) 
+                * cos(radians(longtitude) - radians(${longitude})) 
                 + sin(radians(${latitude})) 
                 * sin(radians(latitude))
             )) AS distance
           FROM 
             Provider
-          ${subCatFilter}
-          HAVING 
-            distance < ${radius}
+          LEFT JOIN Service ON Provider.providerId = Service.providerId
+      WHERE Service.categorySubCatId = ${categorySubCatId}
+      HAVING 
+      distance < ${radius}
         `;
 
     res.status(200).json({
