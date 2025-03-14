@@ -21,45 +21,45 @@ providerController.getAllProviders = async (req, res, next) => {
 providerController.getFilteredProviders = async (req, res, next) => {
   try {
     // Extract query parameters for filtering
-    const { categorySubCatId, latitude, longitude, radius } = req.query;
-    console.log(categorySubCatId);
+    const { subCatId, latitude, longitude, radius } = req.query;
+    // console.log(categorySubCatId);
     // Construct the filter object
     const filters = {};
 
-    if (categorySubCatId) {
-      filters.service = {
-        some: {
-          categorySubCatId: parseInt(categorySubCatId), // Ensure categoryId is a number
-        },
-      };
-    }
+    // if (categorySubCatId) {
+    //   filters.service = {
+    //     some: {
+    //       categorySubCatId: parseInt(categorySubCatId), // Ensure categoryId is a number
+    //     },
+    //   };
+    // }
 
     // if (location) {
     //   filters.location = location;
     // }
 
     // Fetch providers with the applied filters
-    const providers = await prisma.provider.findMany({
-      where: filters,
-      include: {
-        service: true, // Optionally include services (or use specific fields like `categoryId`)
-      },
-      take: 10, // Limit the results to 10 providers
-    });
+    // const providers = await prisma.provider.findMany({
+    //   where: filters,
+    //   include: {
+    //     service: true, // Optionally include services (or use specific fields like `categoryId`)
+    //   },
+    //   take: 10, // Limit the results to 10 providers
+    // });
 
     const results = await prisma.$queryRaw`SELECT 
-           *, 
+            *, 
             (6371 * acos(
                 cos(radians(${latitude})) 
                 * cos(radians(latitude)) 
-                * cos(radians(longtitude) - radians(${longitude})) 
+                * cos(radians(longitude) - radians(${longitude})) 
                 + sin(radians(${latitude})) 
                 * sin(radians(latitude))
             )) AS distance
           FROM 
             Provider
           LEFT JOIN Service ON Provider.providerId = Service.providerId
-      WHERE Service.categorySubCatId = ${categorySubCatId}
+        WHERE Service.subCatId = ${subCatId}
       HAVING 
       distance < ${radius}
         `;
