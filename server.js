@@ -11,6 +11,11 @@ const providerRoute = require('./routes/provider-route');
 const addressRoute = require('./routes/address-route');
 const documentRoute = require('./routes/document-route');
 const serviceRoute = require('./routes/service-route');
+<<<<<<< HEAD
+=======
+const penaltyRoute = require('./routes/penalty-route');
+
+>>>>>>> dev
 
 const app = express();
 
@@ -25,6 +30,11 @@ app.use('/provider', providerRoute);
 app.use('/address', addressRoute);
 app.use('/document', documentRoute);
 app.use('/service', serviceRoute);
+<<<<<<< HEAD
+=======
+app.use('/penalty', penaltyRoute);
+
+>>>>>>> dev
 
 // Error Handling
 app.use(errorMiddleWare);
