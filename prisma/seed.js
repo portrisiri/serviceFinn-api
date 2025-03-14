@@ -310,7 +310,7 @@ const providerData = [
     email: 'john.doe@example.com',
     phoneNumber: '+66 123 456 789',
     latitude: 13.7563,
-    longtitude: 100.5018,
+    longitude: 100.5018,
   },
   {
     providerId: 'P54321BKK',
@@ -319,7 +319,7 @@ const providerData = [
     email: 'jane.smith@example.com',
     phoneNumber: '+66 234 567 890',
     latitude: 13.75,
-    longtitude: 100.5167,
+    longitude: 100.5167,
   },
   {
     providerId: 'P23456BKK',
@@ -328,7 +328,7 @@ const providerData = [
     email: 'michael.johnson@example.com',
     phoneNumber: '+66 345 678 901',
     latitude: 13.7567,
-    longtitude: 100.5166,
+    longitude: 100.5166,
   },
   {
     providerId: 'P87654BKK',
@@ -337,7 +337,7 @@ const providerData = [
     email: 'emily.taylor@example.com',
     phoneNumber: '+66 456 789 012',
     latitude: 13.753,
-    longtitude: 100.5025,
+    longitude: 100.5025,
   },
   {
     providerId: 'P65432BKK',
@@ -346,7 +346,7 @@ const providerData = [
     email: 'david.martinez@example.com',
     phoneNumber: '+66 567 890 123',
     latitude: 13.7509,
-    longtitude: 100.5083,
+    longitude: 100.5083,
   },
   {
     providerId: 'P11223BKK',
@@ -355,7 +355,7 @@ const providerData = [
     email: 'laura.davis@example.com',
     phoneNumber: '+66 678 901 234',
     latitude: 13.7595,
-    longtitude: 100.5158,
+    longitude: 100.5158,
   },
   {
     providerId: 'P22334BKK',
@@ -364,7 +364,7 @@ const providerData = [
     email: 'daniel.garcia@example.com',
     phoneNumber: '+66 789 012 345',
     latitude: 13.7589,
-    longtitude: 100.5033,
+    longitude: 100.5033,
   },
   {
     providerId: 'P33445BKK',
@@ -373,7 +373,7 @@ const providerData = [
     email: 'sophia.lee@example.com',
     phoneNumber: '+66 890 123 456',
     latitude: 13.7537,
-    longtitude: 100.507,
+    longitude: 100.507,
   },
   {
     providerId: 'P44556BKK',
@@ -382,7 +382,7 @@ const providerData = [
     email: 'james.miller@example.com',
     phoneNumber: '+66 901 234 567',
     latitude: 13.7572,
-    longtitude: 100.5112,
+    longitude: 100.5112,
   },
   {
     providerId: 'P55667BKK',
@@ -391,7 +391,7 @@ const providerData = [
     email: 'olivia.wilson@example.com',
     phoneNumber: '+66 012 345 678',
     latitude: 13.7543,
-    longtitude: 100.5095,
+    longitude: 100.5095,
   },
   {
     providerId: 'P66778BKK',
@@ -400,7 +400,7 @@ const providerData = [
     email: 'benjamin.moore@example.com',
     phoneNumber: '+66 123 789 456',
     latitude: 13.759,
-    longtitude: 100.5087,
+    longitude: 100.5087,
   },
   {
     providerId: 'P77889BKK',
@@ -409,7 +409,7 @@ const providerData = [
     email: 'mia.clark@example.com',
     phoneNumber: '+66 234 890 567',
     latitude: 13.7561,
-    longtitude: 100.5074,
+    longitude: 100.5074,
   },
   {
     providerId: 'P88990BKK',
@@ -418,7 +418,7 @@ const providerData = [
     email: 'ethan.rodriguez@example.com',
     phoneNumber: '+66 345 901 678',
     latitude: 13.7552,
-    longtitude: 100.5063,
+    longitude: 100.5063,
   },
   {
     providerId: 'P99001BKK',
@@ -427,7 +427,7 @@ const providerData = [
     email: 'chloe.walker@example.com',
     phoneNumber: '+66 456 012 789',
     latitude: 13.7578,
-    longtitude: 100.509,
+    longitude: 100.509,
   },
   {
     providerId: 'P10223BKK',
@@ -436,7 +436,7 @@ const providerData = [
     email: 'alexander.hernandez@example.com',
     phoneNumber: '+66 567 123 890',
     latitude: 13.7583,
-    longtitude: 100.51,
+    longitude: 100.51,
   },
   {
     providerId: 'P21334BKK',
@@ -445,7 +445,7 @@ const providerData = [
     email: 'ava.allen@example.com',
     phoneNumber: '+66 678 234 901',
     latitude: 13.752,
-    longtitude: 100.5116,
+    longitude: 100.5116,
   },
   {
     providerId: 'P32445BKK',
@@ -454,7 +454,7 @@ const providerData = [
     email: 'jackson.young@example.com',
     phoneNumber: '+66 789 345 012',
     latitude: 13.7538,
-    longtitude: 100.502,
+    longitude: 100.502,
   },
   {
     providerId: 'P43556BKK',
@@ -463,7 +463,7 @@ const providerData = [
     email: 'amelia.king@example.com',
     phoneNumber: '+66 890 456 123',
     latitude: 13.7548,
-    longtitude: 100.513,
+    longitude: 100.513,
   },
   {
     providerId: 'P54667BKK',
@@ -472,7 +472,7 @@ const providerData = [
     email: 'samuel.wright@example.com',
     phoneNumber: '+66 901 567 234',
     latitude: 13.7574,
-    longtitude: 100.5143,
+    longitude: 100.5143,
   },
   {
     providerId: 'P65778BKK',
@@ -481,7 +481,7 @@ const providerData = [
     email: 'grace.lopez@example.com',
     phoneNumber: '+66 012 678 345',
     latitude: 13.7501,
-    longtitude: 100.5099,
+    longitude: 100.5099,
   },
   {
     providerId: 'P76889BKK',
@@ -490,7 +490,7 @@ const providerData = [
     email: 'lucas.gonzalez@example.com',
     phoneNumber: '+66 123 890 123',
     latitude: 13.7556,
-    longtitude: 100.5079,
+    longitude: 100.5079,
   },
   {
     providerId: 'P87990BKK',
@@ -499,7 +499,7 @@ const providerData = [
     email: 'zoe.nelson@example.com',
     phoneNumber: '+66 234 901 234',
     latitude: 13.7568,
-    longtitude: 100.5102,
+    longitude: 100.5102,
   },
   {
     providerId: 'P98001BKK',
@@ -508,7 +508,7 @@ const providerData = [
     email: 'isaac.harris@example.com',
     phoneNumber: '+66 345 012 345',
     latitude: 13.7533,
-    longtitude: 100.5107,
+    longitude: 100.5107,
   },
   {
     providerId: 'P10234BKK',
@@ -517,7 +517,7 @@ const providerData = [
     email: 'lily.martin@example.com',
     phoneNumber: '+66 456 123 456',
     latitude: 13.757,
-    longtitude: 100.5125,
+    longitude: 100.5125,
   },
   {
     providerId: 'P21345BKK',
@@ -526,7 +526,7 @@ const providerData = [
     email: 'mason.lee@example.com',
     phoneNumber: '+66 567 234 567',
     latitude: 13.7541,
-    longtitude: 100.5119,
+    longitude: 100.5119,
   },
   {
     providerId: 'P32456BKK',
@@ -535,7 +535,7 @@ const providerData = [
     email: 'charlotte.perez@example.com',
     phoneNumber: '+66 678 345 678',
     latitude: 13.7592,
-    longtitude: 100.5137,
+    longitude: 100.5137,
   },
   {
     providerId: 'P43567BKK',
@@ -544,7 +544,7 @@ const providerData = [
     email: 'leo.scott@example.com',
     phoneNumber: '+66 789 456 789',
     latitude: 13.7534,
-    longtitude: 100.5104,
+    longitude: 100.5104,
   },
   {
     providerId: 'P54678BKK',
@@ -553,7 +553,7 @@ const providerData = [
     email: 'victoria.green@example.com',
     phoneNumber: '+66 890 567 890',
     latitude: 13.7553,
-    longtitude: 100.5081,
+    longitude: 100.5081,
   },
 ];
 
@@ -603,9 +603,9 @@ async function seedDatabase() {
     data: categoryData,
   });
 
-  // await prisma.service.createMany({
-  //   data: serviceData
-  // })
+  await prisma.service.createMany({
+    data: serviceData,
+  });
 }
 
 console.log('Seeding Database...');
