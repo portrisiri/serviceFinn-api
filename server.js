@@ -14,7 +14,6 @@ const serviceRoute = require('./routes/service-route');
 const penaltyRoute = require('./routes/penalty-route');
 const paymentRoute = require('./routes/payment-route');
 
-
 const app = express();
 
 app.use(express.json());
@@ -28,9 +27,8 @@ app.use('/provider', providerRoute);
 app.use('/address', addressRoute);
 app.use('/document', documentRoute);
 app.use('/service', serviceRoute);
-app.use('/penalty', penaltyRoute);
 app.use('/payment', paymentRoute);
-
+app.use('/penalty', penaltyRoute);
 
 // Error Handling
 app.use(errorMiddleWare);
