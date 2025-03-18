@@ -15,6 +15,8 @@ paymentController.createPayment = async (req, res, next) => {
       return res.status(400).json({ error: "Invalid amount" });
     }
 
+    // console.log(bookingId)
+
     // Convert amount to satangs (smallest currency unit)
     const amountInSatang = Math.round(amount * 100);
 
@@ -34,8 +36,8 @@ paymentController.createPayment = async (req, res, next) => {
         },
       ],
       mode: "payment",
-      success_url: `http://localhost:5173//payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `http://localhost:5173//payment-cancel`,
+      success_url: `http://localhost:5173/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `http://localhost:5173/payment-cancel`,
     });
 
     // Store payment details in the database
@@ -45,7 +47,8 @@ paymentController.createPayment = async (req, res, next) => {
         amount: parseFloat(amount),
         paymentDate: new Date(),
         paymentStatus: "PENDING",
-        transactionId: session.id,
+        sessionId: session.id,
+        transactionId: ''
       },
     });
 
@@ -60,10 +63,11 @@ paymentController.createPayment = async (req, res, next) => {
   }
 };
 
+
 paymentController.verifyPayment = async (req, res) => {
   try {
-    const { sessionId } = req.query;
-
+    const { sessionId } = req.body;
+    // console.log(sessionId)
     if (!sessionId) {
       return res.status(400).json({ error: "Missing session ID" });
     }
@@ -82,27 +86,51 @@ paymentController.verifyPayment = async (req, res) => {
     const paymentIntent = await stripe.paymentIntents.retrieve(transactionId);
 
     // Determine payment status
-    const paymentStatus = paymentIntent.status === "succeeded" ? "PAID" : "FAILED";
+    const paymentStatus = paymentIntent.status === "succeeded" ? "SUCCESS" : "FAILED";
 
-    // Update the payment record with the transaction ID and status
+
+    const paymentMethod = paymentIntent.payment_method_types[0];
+    // console.log(paymentMethod)
+
+
+    // If it's not one of the specified payment methods, skip the update for paymentMethod
+    if (!paymentMethod) {
+      return res.status(400).json({ error: "Unsupported payment method" });
+    }
+
+    // Update a single payment record with the transaction ID, status, and payment method
     const updatedPayment = await prisma.payment.updateMany({
-      where: { sessionId },
+      where: { sessionId }, // Find the payment record by sessionId
       data: {
         transactionId, // Store the actual Stripe transaction ID
         paymentStatus,
+        paymentMethod: paymentMethod, // Store the payment method as 'card' or 'promptpay'
       },
     });
 
-    if (updatedPayment.count === 0) {
-      return res.status(404).json({ error: "Payment record not found" });
-    }
-
-    res.json({ success: true, message: `Payment ${paymentStatus.toLowerCase()} and transaction ID stored` });
+    // Update the payment status on the booking table if payment is successful
+// Update the payment status on the booking table if payment is successful
+if (paymentStatus === "SUCCESS") {
+  // Find the booking associated with the payment
+  const paymentRecord = await prisma.payment.findFirst({
+    where: { sessionId },
+    select: { bookingId: true },
+  });
+  console.log(paymentRecord)
+  if (paymentRecord) {
+    await prisma.booking.update({
+      where: { bookingId: paymentRecord.bookingId },
+      data: { paymentStatus: "PAID" },
+    });
+  }
+}
+    res.json({ success: true, message: `Payment ${paymentStatus.toLowerCase()} and transaction ID stored. Payment method: ${paymentMethod}` });
   } catch (error) {
     console.error("Payment verification error:", error);
     res.status(500).json({ error: error.message });
   }
 };
+
 
 paymentController.refundPayment = async (req, res) => {
   try {
@@ -122,7 +150,7 @@ paymentController.refundPayment = async (req, res) => {
     }
 
     // Ensure the payment is marked as PAID before processing a refund
-    if (payment.paymentStatus !== "PAID") {
+    if (payment.paymentStatus !== "SUCCESS") {
       return res.status(400).json({ error: "Payment not eligible for refund" });
     }
 
@@ -136,7 +164,7 @@ paymentController.refundPayment = async (req, res) => {
       where: { paymentId },
       data: {
         paymentStatus: "REFUNDED",
-        refundTransactionId: refund.id, // Store the refund transaction ID
+        // refundTransactionId: refund.id, // Store the refund transaction ID
       },
     });
 
@@ -150,6 +178,85 @@ paymentController.refundPayment = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+
+paymentController.getAllPayment = async (req, res, next) => {
+  try {
+    const payments = await prisma.payment.findMany();
+
+    res.status(200).json({
+      success: true,
+      data: payments,
+    });
+  } catch (err) {
+    console.error('Error fetching payments:', err);
+    next(err);
+  }
+};
+
+
+paymentController.getUserPayments = async (req, res, next) => {
+  try {
+    const { userId } = req.user; // Assuming userId is available from authenticated user
+
+    if (!userId) {
+      return res.status(400).json({ error: "Missing user ID" });
+    }
+
+    // Retrieve user's payments by joining with booking to get userId
+    const payments = await prisma.payment.findMany({
+      where: {
+        booking: {
+          userId: userId,
+        },
+      },
+      include: {
+        booking: true,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: payments,
+    });
+  } catch (err) {
+    console.error('Error fetching user payments:', err);
+    next(err);
+  }
+};
+
+
+// // Webhook to capture payment method and update database
+// paymentController.handleStripeWebhook = async (req, res) => {
+//   const sig = req.headers['stripe-signature'];
+
+//   try {
+//     const event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+
+//     if (event.type === 'checkout.session.completed') {
+//       const session = event.data.object;
+
+//       // Retrieve payment method
+//       const paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent);
+//       const paymentMethod = paymentIntent.payment_method_types[0];
+
+//       // Update payment record
+//       await prisma.payment.update({
+//         where: { sessionId: session.id },
+//         data: {
+//           paymentStatus: "COMPLETED",
+//           transactionId: session.payment_intent,
+//           paymentMethod: paymentMethod,
+//         },
+//       });
+//     }
+
+//     res.status(200).send('Webhook received');
+//   } catch (err) {
+//     console.error('Webhook error:', err);
+//     res.status(400).send(`Webhook error: ${err.message}`);
+//   }
+// };
 
 
 
