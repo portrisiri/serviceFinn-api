@@ -37,7 +37,7 @@ paymentController.createPayment = async (req, res, next) => {
       ],
       mode: "payment",
       success_url: `http://localhost:5173/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `http://localhost:5173/payment-cancel`,
+      cancel_url: `http://localhost:5173/payment-cancel?session_id={CHECKOUT_SESSION_ID}`,
     });
 
     // Store payment details in the database
@@ -110,21 +110,47 @@ paymentController.verifyPayment = async (req, res) => {
 
     // Update the payment status on the booking table if payment is successful
 // Update the payment status on the booking table if payment is successful
-if (paymentStatus === "SUCCESS") {
-  // Find the booking associated with the payment
-  const paymentRecord = await prisma.payment.findFirst({
-    where: { sessionId },
-    select: { bookingId: true },
-  });
-  console.log(paymentRecord)
-  if (paymentRecord) {
-    await prisma.booking.update({
-      where: { bookingId: paymentRecord.bookingId },
-      data: { paymentStatus: "PAID" },
-    });
-  }
-}
+// if (paymentStatus === "SUCCESS") {
+//   // Find the booking associated with the payment
+//   const paymentRecord = await prisma.payment.findFirst({
+//     where: { sessionId },
+//     select: { bookingId: true },
+//   });
+//   console.log(paymentRecord)
+//   if (paymentRecord) {
+//     await prisma.booking.update({
+//       where: { bookingId: paymentRecord.bookingId },
+//       data: { paymentStatus: "PAID" },
+//     });
+//   }
+// }
     res.json({ success: true, message: `Payment ${paymentStatus.toLowerCase()} and transaction ID stored. Payment method: ${paymentMethod}` });
+  } catch (error) {
+    console.error("Payment verification error:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+paymentController.cancelPayment = async (req, res) => {
+  try {
+    const { sessionId } = req.body;
+    // console.log(sessionId)
+    if (!sessionId) {
+      return res.status(400).json({ error: "Missing session ID" });
+    }
+
+
+    // Update a single payment record with the transaction ID, status, and payment method
+    const updatedPayment = await prisma.payment.updateMany({
+      where: { sessionId }, // Find the payment record by sessionId
+      data: {
+         // Store the actual Stripe transaction ID
+        paymentStatus:"FAILED",
+      },
+    });
+
+    res.json({ success: true, message: `Payment and transaction ID stored. Payment method:` });
   } catch (error) {
     console.error("Payment verification error:", error);
     res.status(500).json({ error: error.message });
@@ -197,11 +223,11 @@ paymentController.getAllPayment = async (req, res, next) => {
 
 paymentController.getUserPayments = async (req, res, next) => {
   try {
-    const { userId } = req.user; // Assuming userId is available from authenticated user
+    // const { userId } = req.user; // Assuming userId is available from authenticated user
 
-    if (!userId) {
-      return res.status(400).json({ error: "Missing user ID" });
-    }
+    // if (!userId) {
+    //   return res.status(400).json({ error: "Missing user ID" });
+    // }
 
     // Retrieve user's payments by joining with booking to get userId
     const payments = await prisma.payment.findMany({
