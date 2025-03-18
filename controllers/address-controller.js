@@ -4,13 +4,14 @@ const addressController = {};
 
 addressController.createAddress = async (req, res, next) => {
   try {
-    const { name, address, location, userId } = req.body;
+    const { name, address, latitude, longitude, userId } = req.body;
 
     const result = await prisma.userAddress.create({
       data: {
         name,
         address,
-        location,
+        latitude,
+        longitude,
         userId,
       },
     });
@@ -70,7 +71,7 @@ addressController.getAddressesByUserId = async (req, res, next) => {
 addressController.updateAddress = async (req, res, next) => {
   try {
     const { addressId } = req.params;
-    const { name, address, location } = req.body;
+    const { name, address, latitude, longitude } = req.body;
 
     const ifExist = await prisma.userAddress.findFirst({
       where: {
@@ -89,7 +90,8 @@ addressController.updateAddress = async (req, res, next) => {
       data: {
         name,
         address,
-        location,
+        latitude,
+        longitude,
       },
     });
     res.status(200).json({ result });

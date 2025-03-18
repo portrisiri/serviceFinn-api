@@ -128,8 +128,8 @@ model Booking {
   userId        String
   providerId    String
   serviceId     Int
-  startDate     DateTime
-  endDate       DateTime?
+  startDate     DateTime             @db.Date
+  endDate       DateTime?            @db.Date
   startTime     DateTime
   endTime       DateTime
   latitude      Decimal
