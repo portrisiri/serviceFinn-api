@@ -13,6 +13,7 @@ const addressRoute = require('./routes/address-route');
 const documentRoute = require('./routes/document-route');
 const serviceRoute = require('./routes/service-route');
 const penaltyRoute = require('./routes/penalty-route');
+const paymentRoute = require('./routes/payment-route');
 const bookingRoute = require('./routes/booking-route');
 const reviewRoute = require('./routes/review-route');
 
@@ -30,7 +31,7 @@ app.use('/provider', providerRoute);
 app.use('/address', addressRoute);
 app.use('/document', documentRoute);
 app.use('/service', serviceRoute);
-
+app.use('/payment', paymentRoute);
 app.use('/penalty', penaltyRoute);
 
 app.use('/booking', bookingRoute);
