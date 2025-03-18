@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 require('dotenv').config();
+const { clerkMiddleware } = require('@clerk/express');
 
 const errorMiddleWare = require('./middlewares/error');
 const notFoundMiddleWare = require('./middlewares/not-found');
@@ -13,9 +14,11 @@ const documentRoute = require('./routes/document-route');
 const serviceRoute = require('./routes/service-route');
 const penaltyRoute = require('./routes/penalty-route');
 const bookingRoute = require('./routes/booking-route');
+const reviewRoute = require('./routes/review-route');
 
 const app = express();
 
+app.use(clerkMiddleware());
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(cors());
@@ -31,6 +34,7 @@ app.use('/service', serviceRoute);
 app.use('/penalty', penaltyRoute);
 
 app.use('/booking', bookingRoute);
+app.use('/reviews', reviewRoute);
 // Error Handling
 app.use(errorMiddleWare);
 app.use(notFoundMiddleWare);
