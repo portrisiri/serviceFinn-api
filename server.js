@@ -12,6 +12,7 @@ const addressRoute = require('./routes/address-route');
 const documentRoute = require('./routes/document-route');
 const serviceRoute = require('./routes/service-route');
 const penaltyRoute = require('./routes/penalty-route');
+const bookingRoute = require('./routes/booking-route');
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use('/service', serviceRoute);
 
 app.use('/penalty', penaltyRoute);
 
+app.use('/booking', bookingRoute);
 // Error Handling
 app.use(errorMiddleWare);
 app.use(notFoundMiddleWare);
