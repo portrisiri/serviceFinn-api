@@ -59,9 +59,10 @@ providerController.getFilteredProviders = async (req, res, next) => {
           FROM 
             Provider
           LEFT JOIN Service ON Provider.providerId = Service.providerId
-        WHERE Service.subCatId = ${subCatId}
+
       HAVING 
       distance < ${radius}
+      ORDER BY distance ASC
         `;
 
     res.status(200).json({
