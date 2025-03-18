@@ -43,7 +43,7 @@ categoryController.getSubCatByCat = async (req, res, next) => {
 
 categoryController.createSubCategory = async (req, res, next) => {
   try {
-    const { categoryId, categoryName, subCatName, subCatId } = req.body;
+    const { categoryId, categoryName, subCatName, subCatId, categoryIcon } = req.body;
     const ifExist = await prisma.category.findMany({
       where: {
         OR: [
@@ -65,6 +65,7 @@ categoryController.createSubCategory = async (req, res, next) => {
         categoryName,
         subCatName,
         subCatId,
+        categoryIcon,
       },
     });
     res.status(200).json({ result });
