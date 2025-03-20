@@ -113,6 +113,7 @@ bookingController.getHourlySlots = async (req, res, next) => {
     // Create an empty array to hold the timeslots
     const providerSlots = [];
 
+    
     // Begin looping
     // i is the number of days to generate slots for, eg 3 = today, tomorrow, day after tomorrow
     for (let i = 0; i < 3; i++) {
@@ -445,10 +446,13 @@ bookingController.createBooking = async (req, res, next) => {
       jobScope,
     } = req.body;
 
+    
+
     // Frontend will send all data in the local timezone
     // Backend will have to format into UTC
     const startDate = new Date(startDateLocal);
     const endDate = new Date(endDateLocal);
+
     // Check if endDate is after startDate
     if (isBefore(endDate, startDate)) {
       return createError(400, 'Start date cannot be after end date');
@@ -516,6 +520,7 @@ bookingController.updateBookingDetail = async (req, res, next) => {
         bookingId: Number(bookingId),
       },
     });
+    
     if (booking.status != 'PENDING') {
       return createError(400, 'Once confirmed, booking details cannot be updated');
     }

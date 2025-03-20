@@ -7,9 +7,10 @@ const providerRoute = express.Router();
 
 // LatLong not required! http://localhost:4289/provider/
 providerRoute.get('/', queryValidator(filterProviderSchema), providerController.getAllProviders);
-
 // LatLong REQUIRED!!! http://localhost:4289/provider/filter
 providerRoute.get('/filter', queryValidator(filterProviderDistaneSchema), providerController.getFilteredProviders);
+// http://localhost:4289/provider/
+providerRoute.get('/', providerController.getAllProviders);
 
 providerRoute.get('/:id', providerController.getProviderById);
 providerRoute.put('/update', providerController.updateProviderProfile);
