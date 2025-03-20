@@ -22,6 +22,21 @@ serviceController.getAllServicesByProviderId = async (req, res, next) => {
   }
 };
 
+serviceController.getAllServices = async (req, res, next) => {
+  try {
+    const services = await prisma.service.findMany({
+      include: {
+        provider: true,      // Include provider details
+        booking: true,       // Include related bookings
+        subCatName: true,    // Include category details (subCatName relation)
+      },
+    });
+    res.status(200).json(services);
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 serviceController.getServiceById = async (req, res, next) => {
   try {

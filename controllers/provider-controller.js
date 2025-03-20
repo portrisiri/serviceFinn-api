@@ -1,5 +1,6 @@
 const prisma = require('../models/index');
 const { requireAuth } = require('@clerk/express');
+const createError = require('../utils/create-error');
 
 const providerController = {};
 
@@ -20,11 +21,41 @@ providerController.getAllProviders = async (req, res, next) => {
 // For User
 providerController.getFilteredProviders = async (req, res, next) => {
   try {
-    // Extract query parameters for filtering
-    const { subCatId, latitude, longitude, radius } = req.query;
-    // console.log(categorySubCatId);
+    const { subCatId, latitude, longitude, radius, orderBy, sort, skip, take, date, rating } = req.query;
+
+    // HAVING ****************************************************************************************
+    // Distance
+    const radiusFilter = radius ? `distance < ${radius}` : '';
+    const havingFilter = radiusFilter ? `HAVING ${radiusFilter}` : '';
+
+    // WHERE ****************************************************************************************
+    const whereArray = [];
+    // SubCatId
+    const subCatIdFilter = subCatId ? `Service.subCatId = ${subCatId}` : '';
+    subCatIdFilter && whereArray.push(subCatIdFilter);
+    // Day
+    const targetDay = date
+      ? new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date(date)).toLowerCase()
+      : null;
+    const dayFilter = targetDay ? `Provider.${targetDay} = true` : '';
+    dayFilter && whereArray.push(dayFilter);
+    // Rating
+    const ratingFilter = rating ? `Provider.providerRating >= ${rating}` : '';
+    ratingFilter && whereArray.push(ratingFilter);
+    //
+    let whereFilter = '';
+    if (whereArray.length > 0) {
+      whereFilter = `WHERE ${whereArray.join(' AND ')}`;
+    }
+
+    // ****************************************************************************************
+    const sortFilter = sort ? `${sort}` : '';
+    const orderByFilter = orderBy ? `ORDER BY ${orderBy} ${sortFilter}` : '';
+    const offsetFilter = skip ? `OFFSET ${skip}` : '';
+    const limitFilter = take ? `LIMIT ${take} ${offsetFilter}` : '';
+
     // Construct the filter object
-    const filters = {};
+    // const filters = {};
 
     // if (categorySubCatId) {
     //   filters.service = {
@@ -47,27 +78,41 @@ providerController.getFilteredProviders = async (req, res, next) => {
     //   take: 10, // Limit the results to 10 providers
     // });
 
-    const results = await prisma.$queryRaw`SELECT 
-            *, 
-            (6371 * acos(
-                cos(radians(${latitude})) 
-                * cos(radians(latitude)) 
-                * cos(radians(longitude) - radians(${longitude})) 
-                + sin(radians(${latitude})) 
-                * sin(radians(latitude))
-            )) AS distance
-          FROM 
-            Provider
-          LEFT JOIN Service ON Provider.providerId = Service.providerId
+    const count = await prisma.$queryRawUnsafe(`
+    SELECT COUNT(*) AS totalRows
+    FROM (
+      SELECT 
+        Provider.providerId AS providerId,
+        Provider.latitude,
+        Provider.longitude,
+        Service.providerId AS serviceProviderId,
+        Service.serviceId,
+        (6371 * acos(cos(radians(${latitude})) 
+                    * cos(radians(Provider.latitude)) 
+                    * cos(radians(Provider.longitude) - radians(${longitude})) 
+                    + sin(radians(${latitude})) 
+                    * sin(radians(Provider.latitude)))) AS distance
+      FROM Provider
+      LEFT JOIN Service ON Provider.providerId = Service.providerId
+      ${whereFilter}
+      ${havingFilter}
+    ) AS provider_distances
+    `);
 
-      HAVING 
-      distance < ${radius}
-      ORDER BY distance ASC
-        `;
+    // All the providers that satisfies the criteria
+    const results = await prisma.$queryRawUnsafe(`
+    SELECT *, (6371 * acos(cos(radians(${latitude})) * cos(radians(latitude)) * cos(radians(longitude) - radians(${longitude})) + sin(radians(${latitude})) * sin(radians(latitude)))) AS distance 
+    FROM Provider
+    LEFT JOIN Service ON Provider.providerId = Service.providerId
+    ${whereFilter}
+    ${havingFilter}
+    ${orderByFilter}
+    ${limitFilter}
+    `);
 
     res.status(200).json({
       success: true,
-      message: 'Providers fetched successfully',
+      count: Number(count[0].totalRows),
       results,
     });
   } catch (error) {
