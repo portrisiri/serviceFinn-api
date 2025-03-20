@@ -7,7 +7,25 @@ const providerController = {};
 // For Admin
 providerController.getAllProviders = async (req, res, next) => {
   try {
-    const providers = await prisma.provider.findMany();
+    const { subCatId, orderBy, sort, skip, take, rating } = req.query;
+    const providerFilters = {};
+    rating && (providerFilters.providerRating = { gte: Number(rating) });
+    subCatId &&
+      (providerFilters.service = {
+        some: {
+          subCatId,
+        },
+      });
+
+    const providers = await prisma.provider.findMany({
+      orderBy: {
+        [orderBy]: sort,
+      },
+      where: providerFilters,
+      include: { service: true },
+      skip,
+      take,
+    });
     res.status(200).json({
       success: true,
       message: 'hello',
