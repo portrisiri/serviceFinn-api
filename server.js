@@ -26,7 +26,7 @@ app.use(cors());
 
 // Routes
 app.use('/auth', authRoute);
-app.use('category', categoryRoute);
+app.use('/category', categoryRoute);
 app.use('/provider', providerRoute);
 app.use('/address', addressRoute);
 app.use('/document', documentRoute);
