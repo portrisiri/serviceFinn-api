@@ -11,6 +11,10 @@ authController.registerUser = async (req, res, next) => {
 
     console.log(req.body)
 
+    if (!clerkID || !firstName || !lastName || !email) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
     const checkExist = await prisma.user.findFirst({
       where: {
         userId : clerkID
@@ -31,7 +35,13 @@ authController.registerUser = async (req, res, next) => {
       })
     }
 
-    const updatedUser = await clerkClient.users.updateUserMetadata(clerkID, {
+    const updateClerkinfo = await clerkClient.users.updateUser(clerkID, {
+      firstName,
+      lastName,
+      phoneNumbers: [phone], // Update phone number
+    });
+
+    const updatedUserMetadata = await clerkClient.users.updateUserMetadata(clerkID, {
       publicMetadata: {
         role: "USER",
         isCompleted: true,
@@ -41,36 +51,8 @@ authController.registerUser = async (req, res, next) => {
 
     res.status(200).json({ message: "Create USER Successfully" })
 
-    // const { id } = req.user;
-    // console.log("User Id : ", id);
-    // // look for user
-    // const checkExist = await prisma.user.findUnique({
-    //   where: {
-    //     clerkID: id,
-    //   },
-    // });
-    // const userClerk = req.user;
-    // console.log(userClerk);
-
-    // if (checkExist === null) {
-    //   const result = await prisma.user.create({
-    //     data : {
-    //         clerkID: userClerk?.id,
-    //         username: userClerk?.username,
-    //         firstname: userClerk?.firstName,
-    //         lastname: userClerk?.lastName,
-    //         email: userClerk?.emailAddresses?.[0]?.emailAddress,
-    //         phone: userClerk?.phoneNumbers?.[0]?.phoneNumber,
-    //         password: 'Dummy',
-    //         role: userClerk?.publicMetadata?.role || 'User'
-    //     }
-    //   })
-    //   console.log(result);
-    // }
-
-    // res.status(200).json({ message : "get account", checkExist });
-
   } catch (error) {
+    console.log("ERROR RegistUser", error)
     next(error);
   }
 };
@@ -100,7 +82,7 @@ authController.registerProvider = async (req, res, next) => {
       bankName,
       bankAccount,
       latitude, // Add to your form and client request
-      longtitude, // Add to your form and client request
+      longitude, // Add to your form and client request
     } = req.body;
 
     console.log(clerkID)
@@ -122,7 +104,7 @@ authController.registerProvider = async (req, res, next) => {
     // Create the provider record
     const provider = await prisma.provider.create({
       data: {
-        providerId: userId, // Use Clerk user ID as providerId
+        providerId: clerkID, // Use Clerk user ID as providerId
         firstName: firstName,
         lastName: lastName,
         email: email,
@@ -133,7 +115,7 @@ authController.registerProvider = async (req, res, next) => {
         companyVerification: accountType === 'Company' ? true : false, // Placeholder; implement file upload and verification
         skills: skill,
         latitude: parseFloat(latitude), // Ensure these are decimals
-        longtitude: parseFloat(longtitude),
+        longitude: parseFloat(longitude),
         isCompleted: true, // Mark as completed after all steps are done.
         // Documents: {
         //   create: [
@@ -154,7 +136,13 @@ authController.registerProvider = async (req, res, next) => {
       },
     });
 
-    const updateProvider = await clerkClient.users.updateUserMetadata(userId, {
+    const updateClerkinfo = await clerkClient.users.updateUser(clerkID, {
+      firstName,
+      lastName,
+      phoneNumbers: [phone], // Update phone number
+    });
+
+    const updateProviderMetadata = await clerkClient.users.updateUserMetadata(clerkID, {
       publicMetadata: {
         role: "PROVIDER",
         isCompleted: true,

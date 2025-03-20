@@ -76,8 +76,8 @@ model Provider {
   availability              String?
   profilePicture            String?
   providerRating            Float?
-  latitude                  Decimal
-  longitude                 Decimal
+  latitude                  Decimal?
+  longitude                 Decimal?
   isActive                  Boolean?
   isCompleted               Boolean        @default(false)
   service                   Service[]
