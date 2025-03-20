@@ -5,7 +5,7 @@ const { filterProviderSchema } = require('../validators/provider-schema');
 
 const providerRoute = express.Router();
 
-// http://localhost:4289/provider/
+// http://localhost:4289/provider/ 
 providerRoute.get('/', providerController.getAllProviders);
 
 providerRoute.get('/filter', queryValidator(filterProviderSchema), providerController.getFilteredProviders);
