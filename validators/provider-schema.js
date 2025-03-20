@@ -20,7 +20,9 @@ exports.filterProviderSchema = z
       .optional(),
     radius: z
       .string()
-      .regex(/^\d{1,3}$/, 'Radius must be between 0 and 100 (km)')
+      .regex(/^\d{1,3}(\.\d+)?$/, 'Radius must be between 0 and 100 (km)')
+      .transform((val) => Number(val))
+      .pipe(z.number().gt(0, 'Please select a radius greater than 0').lte(100, 'Maximum supported distance is 100km'))
       .optional(),
     orderBy: z
       .string()
@@ -41,6 +43,13 @@ exports.filterProviderSchema = z
       .string()
       .regex(/^\d+$/, 'Invalid take amount')
       .transform((val) => Number(val))
+      .optional(),
+    date: z.string().date().optional(),
+    rating: z
+      .string()
+      .regex(/^\d(\.\d+)?$/, 'Invalid rating amount, please select a number between 1 and 5')
+      .transform((val) => Number(val))
+      .pipe(z.number().lte(5, 'Maximum rating value is 5'))
       .optional(),
   })
   .refine(
