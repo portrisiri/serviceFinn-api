@@ -21,11 +21,34 @@ providerController.getAllProviders = async (req, res, next) => {
 // For User
 providerController.getFilteredProviders = async (req, res, next) => {
   try {
-    // Extract query parameters for filtering
-    const { subCatId, latitude, longitude, radius, orderBy, sort, skip, take } = req.query;
+    const { subCatId, latitude, longitude, radius, orderBy, sort, skip, take, date, rating } = req.query;
 
-    const subCatIdFilter = subCatId ? `WHERE Service.subCatId = ${subCatId}` : '';
-    const radiusFilter = radius ? `HAVING distance < ${radius}` : '';
+    // HAVING ****************************************************************************************
+    // Distance
+    const radiusFilter = radius ? `distance < ${radius}` : '';
+    const havingFilter = radiusFilter ? `HAVING ${radiusFilter}` : '';
+
+    // WHERE ****************************************************************************************
+    const whereArray = [];
+    // SubCatId
+    const subCatIdFilter = subCatId ? `Service.subCatId = ${subCatId}` : '';
+    subCatIdFilter && whereArray.push(subCatIdFilter);
+    // Day
+    const targetDay = date
+      ? new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date(date)).toLowerCase()
+      : null;
+    const dayFilter = targetDay ? `Provider.${targetDay} = true` : '';
+    dayFilter && whereArray.push(dayFilter);
+    // Rating
+    const ratingFilter = rating ? `Provider.providerRating >= ${rating}` : '';
+    ratingFilter && whereArray.push(ratingFilter);
+    //
+    let whereFilter = '';
+    if (whereArray.length > 0) {
+      whereFilter = `WHERE ${whereArray.join(' AND ')}`;
+    }
+
+    // ****************************************************************************************
     const sortFilter = sort ? `${sort}` : '';
     const orderByFilter = orderBy ? `ORDER BY ${orderBy} ${sortFilter}` : '';
     const offsetFilter = skip ? `OFFSET ${skip}` : '';
@@ -56,7 +79,7 @@ providerController.getFilteredProviders = async (req, res, next) => {
     // });
 
     const count = await prisma.$queryRawUnsafe(`
-   SELECT COUNT(*) AS totalRows
+    SELECT COUNT(*) AS totalRows
     FROM (
       SELECT 
         Provider.providerId AS providerId,
@@ -71,17 +94,18 @@ providerController.getFilteredProviders = async (req, res, next) => {
                     * sin(radians(Provider.latitude)))) AS distance
       FROM Provider
       LEFT JOIN Service ON Provider.providerId = Service.providerId
-      ${subCatIdFilter}
-      ${radiusFilter}
+      ${whereFilter}
+      ${havingFilter}
     ) AS provider_distances
     `);
 
+    // All the providers that satisfies the criteria
     const results = await prisma.$queryRawUnsafe(`
     SELECT *, (6371 * acos(cos(radians(${latitude})) * cos(radians(latitude)) * cos(radians(longitude) - radians(${longitude})) + sin(radians(${latitude})) * sin(radians(latitude)))) AS distance 
     FROM Provider
     LEFT JOIN Service ON Provider.providerId = Service.providerId
-    ${subCatIdFilter}
-    ${radiusFilter}
+    ${whereFilter}
+    ${havingFilter}
     ${orderByFilter}
     ${limitFilter}
     `);
