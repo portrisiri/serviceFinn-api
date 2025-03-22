@@ -2,18 +2,21 @@ const { z } = require('zod');
 
 exports.filterProviderDistaneSchema = z
   .object({
+    categoryId: z.string().regex(/^\d+$/, 'Invalid CategoryId').optional(),
     latitude: z
       .string({
         required_error: 'Latitude of current location is required',
       })
       .transform((val) => Number(val))
-      .pipe(z.number().gte(-90, 'Latitude must be greater than -90').lte(90, 'Latitude must be less than 90')),
+      .pipe(z.number('Lat...').gte(-90, 'Latitude must be greater than -90').lte(90, 'Latitude must be less than 90')),
     longitude: z
       .string({
         required_error: 'Longitude of current location is required',
       })
       .transform((val) => Number(val))
-      .pipe(z.number().gte(-180, 'Longitude must be greater than -180').lte(180, 'Longitude must be less than 180')),
+      .pipe(
+        z.number('Long...').gte(-180, 'Longitude must be greater than -180').lte(180, 'Longitude must be less than 180')
+      ),
     subCatId: z
       .string()
       .regex(/^\d{2}$/, 'Invalid SubCatId')
