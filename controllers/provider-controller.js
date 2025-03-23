@@ -39,8 +39,8 @@ providerController.getAllProviders = async (req, res, next) => {
 // For User
 providerController.getFilteredProviders = async (req, res, next) => {
   try {
-    const { subCatId, latitude, longitude, radius, orderBy, sort, skip, take, date, rating } = req.query;
-
+    const { categoryId, subCatId, latitude, longitude, radius, orderBy, sort, skip, take, date, rating } = req.query;
+    console.log('getFilteredProviders...');
     // HAVING ****************************************************************************************
     // Distance
     const radiusFilter = radius ? `distance < ${radius}` : '';
@@ -48,6 +48,9 @@ providerController.getFilteredProviders = async (req, res, next) => {
 
     // WHERE ****************************************************************************************
     const whereArray = [];
+    // CategoryId
+    const categoryIdFilter = categoryId ? `Category.categoryId = ${categoryId}` : '';
+    categoryIdFilter && whereArray.push(categoryIdFilter);
     // SubCatId
     const subCatIdFilter = subCatId ? `Service.subCatId = ${subCatId}` : '';
     subCatIdFilter && whereArray.push(subCatIdFilter);
@@ -56,7 +59,7 @@ providerController.getFilteredProviders = async (req, res, next) => {
       ? new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date(date)).toLowerCase()
       : null;
     const dayFilter = targetDay ? `Provider.${targetDay} = true` : '';
-    dayFilter && whereArray.push(dayFilter);
+    // dayFilter && whereArray.push(dayFilter);
     // Rating
     const ratingFilter = rating ? `Provider.providerRating >= ${rating}` : '';
     ratingFilter && whereArray.push(ratingFilter);
@@ -65,6 +68,7 @@ providerController.getFilteredProviders = async (req, res, next) => {
     if (whereArray.length > 0) {
       whereFilter = `WHERE ${whereArray.join(' AND ')}`;
     }
+    console.log(whereFilter);
 
     // ****************************************************************************************
     const sortFilter = sort ? `${sort}` : '';
@@ -112,6 +116,7 @@ providerController.getFilteredProviders = async (req, res, next) => {
                     * sin(radians(Provider.latitude)))) AS distance
       FROM Provider
       LEFT JOIN Service ON Provider.providerId = Service.providerId
+         LEFT JOIN Category ON Service.subCatId = Category.subCatId
       ${whereFilter}
       ${havingFilter}
     ) AS provider_distances
@@ -122,6 +127,7 @@ providerController.getFilteredProviders = async (req, res, next) => {
     SELECT *, (6371 * acos(cos(radians(${latitude})) * cos(radians(latitude)) * cos(radians(longitude) - radians(${longitude})) + sin(radians(${latitude})) * sin(radians(latitude)))) AS distance 
     FROM Provider
     LEFT JOIN Service ON Provider.providerId = Service.providerId
+    LEFT JOIN Category ON Service.subCatId = Category.subCatId
     ${whereFilter}
     ${havingFilter}
     ${orderByFilter}
