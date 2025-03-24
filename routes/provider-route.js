@@ -10,7 +10,7 @@ providerRoute.get('/', providerController.getAllProviders);
 
 providerRoute.get('/filter', queryValidator(filterProviderSchema), providerController.getFilteredProviders);
 providerRoute.get('/:id', providerController.getProviderById);
-providerRoute.put('/update', providerController.updateProviderProfile);
+providerRoute.put('/update/:id', providerController.updateProviderProfile);
 providerRoute.put('/activate', providerController.activateProvider);
 providerRoute.put('/deactivate', providerController.deactivateProvider);
 

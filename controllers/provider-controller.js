@@ -123,10 +123,11 @@ providerController.getFilteredProviders = async (req, res, next) => {
 providerController.getProviderById = async (req, res, next) => {
   try {
     const { id } = req.params; // Get providerId from URL params
+    console.log(id)
     // Find a provider with the specific id
     const provider = await prisma.provider.findUnique({
       where: {
-        providerId: +id, // Assuming `id` is passed as a string and needs to be parsed to an integer
+        providerId: id // Assuming `id` is passed as a string and needs to be parsed to an integer
       },
     });
     if (!provider) {
@@ -150,7 +151,7 @@ providerController.getProviderById = async (req, res, next) => {
 providerController.updateProviderProfile = async (req, res, next) => {
   try {
     const { id } = req.params; // Get providerId from URL params
-    const { firstName, lastName, email, phoneNumber, companyName, profilePicture, skills, availability, location } =
+    const { firstName, lastName, email, phoneNumber, companyName, profilePicture, skills, availability, latitude, longitude  } =
       req.body;
 
     // Get the current authenticated user ID (from Clerk session)
@@ -159,7 +160,7 @@ providerController.updateProviderProfile = async (req, res, next) => {
     // Check if the logged-in user is the owner of this provider account
     const provider = await prisma.provider.findUnique({
       where: {
-        providerId: parseInt(id),
+        providerId: id,
       },
     });
 
@@ -171,7 +172,7 @@ providerController.updateProviderProfile = async (req, res, next) => {
     }
 
     // Ensure that the authenticated user is the owner of the provider profile
-    if (provider.providerId !== parseInt(userId)) {
+    if (provider.providerId !== id) {
       return res.status(403).json({
         success: false,
         message: 'You are not authorized to update this provider profile',
@@ -181,7 +182,7 @@ providerController.updateProviderProfile = async (req, res, next) => {
     // Update the provider's profile
     const updatedProvider = await prisma.provider.update({
       where: {
-        providerId: parseInt(id),
+        providerId: id,
       },
       data: {
         firstName,
@@ -192,7 +193,8 @@ providerController.updateProviderProfile = async (req, res, next) => {
         profilePicture,
         skills,
         availability,
-        location,
+        latitude,
+        longitude
       },
     });
 
