@@ -11,7 +11,7 @@ providerRoute.get('/', queryValidator(filterProviderSchema), providerController.
 // LatLong REQUIRED!!! http://localhost:4289/provider/filter
 providerRoute.get('/filter', queryValidator(filterProviderDistaneSchema), providerController.getFilteredProviders);
 providerRoute.get('/:id', providerController.getProviderById);
-providerRoute.put('/update', providerController.updateProviderProfile);
+providerRoute.put('/update/:id', providerController.updateProviderProfile);
 providerRoute.put('/activate', providerController.activateProvider);
 providerRoute.put('/deactivate', providerController.deactivateProvider);
 

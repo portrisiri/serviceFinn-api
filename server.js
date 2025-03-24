@@ -16,6 +16,7 @@ const penaltyRoute = require('./routes/penalty-route');
 const paymentRoute = require('./routes/payment-route');
 const bookingRoute = require('./routes/booking-route');
 const reviewRoute = require('./routes/review-route');
+const userRoute = require('./routes/user-route');
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use(cors());
 
 // Routes
 app.use('/auth', authRoute);
+app.use('/user', userRoute);
 app.use('/category', categoryRoute);
 app.use('/provider', providerRoute);
 app.use('/address', addressRoute);

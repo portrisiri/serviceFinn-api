@@ -7,7 +7,7 @@ const authController = {};
 
 authController.registerUser = async (req, res, next) => {
   try {
-    const { clerkID, firstName, lastName, email, phone, profilePicture } =req.body
+    const { clerkID, firstName, lastName, email, phone, profilePicture, address,latitude,longitude } =req.body
 
     console.log(req.body)
 
@@ -30,7 +30,16 @@ authController.registerUser = async (req, res, next) => {
           email: email,
           phoneNumber: phone,
           profilePicture: profilePicture,
-          isCompleted: true
+          isCompleted: true,
+          UserAddress:{
+            create : {
+              name: "Default",
+              address: address,
+              latitude: latitude,
+              longitude: longitude
+            }
+          
+          }
         }
       })
     }
@@ -58,48 +67,41 @@ authController.registerUser = async (req, res, next) => {
 };
 
 
+
 authController.registerProvider = async (req, res, next) => {
   try {
     console.log('RegisterProvider is invoked')
 
     const {
       clerkID,
-      userId, // Clerk user ID, passed from client
       firstName,
       lastName,
       email,
-      phone,
-      accountType, // Personal or Company
-      companyName,
-      address,
-      city,
-      district,
-      zipCode,
-      qualification, // File upload handling needed
+      phoneNumber,
+      // address,
+      latitude,
+      longitude,
+      // idNo,
+      // idPhoto
       skill,
-      identificationNumber,
-      identificationPhoto, // File upload handling needed
-      bankName,
-      bankAccount,
-      latitude, // Add to your form and client request
-      longitude, // Add to your form and client request
+      // bankName,
+      // bankAccountNO,
+      // bankAccountName,
     } = req.body;
-
-    console.log(clerkID)
-    console.log(userId)
 
     console.log('req.body', req.body)
 
     // Check if the user already exists as a provider
-    const existingProvider = await prisma.provider.findUnique({
-      where: {
-        email: email,
-      },
-    });
+    // No need as clerk checked already?
+    // const existingProvider = await prisma.provider.findUnique({
+    //   where: {
+    //     email: email,
+    //   },
+    // });
 
-    if (existingProvider) {
-      return res.status(400).json({ error: 'Provider with this email already exists' });
-    }
+    // if (existingProvider) {
+    //   return res.status(400).json({ error: 'Provider with this email already exists' });
+    // }
 
     // Create the provider record
     const provider = await prisma.provider.create({
@@ -108,14 +110,12 @@ authController.registerProvider = async (req, res, next) => {
         firstName: firstName,
         lastName: lastName,
         email: email,
-        phoneNumber: phone,
-        companyName: accountType === 'Company' ? companyName : null,
-        personalVerification: accountType === 'Personal' ? true : false,
-        qualificationVerification: true, // Placeholder; implement file upload and verification
-        companyVerification: accountType === 'Company' ? true : false, // Placeholder; implement file upload and verification
+        phoneNumber: phoneNumber,
+        // personalVerification: accountType === 'Personal' ? true : false,
+        // qualificationVerification: true, // Placeholder; implement file upload and verification
         skills: skill,
-        latitude: parseFloat(latitude), // Ensure these are decimals
-        longitude: parseFloat(longitude),
+        latitude: latitude, // Ensure these are decimals
+        longitude: longitude,
         isCompleted: true, // Mark as completed after all steps are done.
         // Documents: {
         //   create: [
@@ -136,11 +136,11 @@ authController.registerProvider = async (req, res, next) => {
       },
     });
 
-    const updateClerkinfo = await clerkClient.users.updateUser(clerkID, {
-      firstName,
-      lastName,
-      phoneNumbers: [phone], // Update phone number
-    });
+    // Noneed since use clerk form at regist
+    // const updateClerkinfo = await clerkClient.users.updateUser(clerkID, {
+    //   firstName,
+    //   lastName,
+    // });
 
     const updateProviderMetadata = await clerkClient.users.updateUserMetadata(clerkID, {
       publicMetadata: {
