@@ -6,7 +6,7 @@ serviceController.getAllServicesByProviderId = async (req, res, next) => {
 
     // Ensure providerId is a valid number
     if (!providerId || isNaN(providerId)) {
-      return res.status(400).json({ message: "Invalid providerId" });
+      return res.status(400).json({ message: 'Invalid providerId' });
     }
 
     const services = await prisma.service.findMany({
@@ -26,9 +26,9 @@ serviceController.getAllServices = async (req, res, next) => {
   try {
     const services = await prisma.service.findMany({
       include: {
-        provider: true,      // Include provider details
-        booking: true,       // Include related bookings
-        subCatName: true,    // Include category details (subCatName relation)
+        provider: true, // Include provider details
+        booking: true, // Include related bookings
+        subCatName: true, // Include category details (subCatName relation)
       },
     });
     res.status(200).json(services);
@@ -37,14 +37,13 @@ serviceController.getAllServices = async (req, res, next) => {
   }
 };
 
-
 serviceController.getServiceById = async (req, res, next) => {
   try {
     const { serviceId } = req.params;
 
     // Ensure serviceId is a valid number
     if (!serviceId || isNaN(serviceId)) {
-      return res.status(400).json({ message: "Invalid serviceId" });
+      return res.status(400).json({ message: 'Invalid serviceId' });
     }
 
     const service = await prisma.service.findUnique({
@@ -56,7 +55,7 @@ serviceController.getServiceById = async (req, res, next) => {
     });
 
     if (!service) {
-      return res.status(404).json({ message: "Service not found" });
+      return res.status(404).json({ message: 'Service not found' });
     }
 
     res.status(200).json(service);
@@ -65,19 +64,18 @@ serviceController.getServiceById = async (req, res, next) => {
   }
 };
 
-
 serviceController.createService = async (req, res, next) => {
   try {
     const { providerId, categoryId, serviceName, price } = req.body;
 
     // Validate required fields
     if (!providerId || !categoryId || !serviceName || price === undefined) {
-      return res.status(400).json({ message: "All fields are required" });
+      return res.status(400).json({ message: 'All fields are required' });
     }
 
     // Ensure numeric values are valid
     if (isNaN(providerId) || isNaN(categoryId) || isNaN(price)) {
-      return res.status(400).json({ message: "Invalid providerId, categoryId, or price" });
+      return res.status(400).json({ message: 'Invalid providerId, categoryId, or price' });
     }
 
     // Check if provider exists
@@ -86,7 +84,7 @@ serviceController.createService = async (req, res, next) => {
     });
 
     if (!providerExists) {
-      return res.status(404).json({ message: "Provider not found" });
+      return res.status(404).json({ message: 'Provider not found' });
     }
 
     // Check if category exists
@@ -95,7 +93,7 @@ serviceController.createService = async (req, res, next) => {
     });
 
     if (!categoryExists) {
-      return res.status(404).json({ message: "Category not found" });
+      return res.status(404).json({ message: 'Category not found' });
     }
 
     // Create the service
@@ -108,13 +106,11 @@ serviceController.createService = async (req, res, next) => {
       },
     });
 
-    res.status(201).json({ message: "Service created successfully", service: newService });
+    res.status(201).json({ message: 'Service created successfully', service: newService });
   } catch (error) {
     next(error);
   }
 };
-
-
 
 serviceController.deleteServiceById = async (req, res, next) => {
   try {
@@ -123,10 +119,10 @@ serviceController.deleteServiceById = async (req, res, next) => {
 
     // Validate input
     if (!serviceId || isNaN(serviceId)) {
-      return res.status(400).json({ message: "Invalid serviceId" });
+      return res.status(400).json({ message: 'Invalid serviceId' });
     }
     if (!providerId || isNaN(providerId)) {
-      return res.status(403).json({ message: "Unauthorized: Only service owners can delete" });
+      return res.status(403).json({ message: 'Unauthorized: Only service owners can delete' });
     }
 
     // Check if the service exists and belongs to the authenticated provider
@@ -135,11 +131,11 @@ serviceController.deleteServiceById = async (req, res, next) => {
     });
 
     if (!service) {
-      return res.status(404).json({ message: "Service not found" });
+      return res.status(404).json({ message: 'Service not found' });
     }
 
     if (service.providerId !== providerId) {
-      return res.status(403).json({ message: "Unauthorized: You can only delete your own service" });
+      return res.status(403).json({ message: 'Unauthorized: You can only delete your own service' });
     }
 
     // Delete the service
@@ -147,13 +143,11 @@ serviceController.deleteServiceById = async (req, res, next) => {
       where: { serviceId: parseInt(serviceId) },
     });
 
-    res.status(200).json({ message: "Service deleted successfully" });
+    res.status(200).json({ message: 'Service deleted successfully' });
   } catch (error) {
     next(error);
   }
 };
-
-
 
 serviceController.updateServiceById = async (req, res, next) => {
   try {
@@ -163,10 +157,10 @@ serviceController.updateServiceById = async (req, res, next) => {
 
     // Validate input
     if (!serviceId || isNaN(serviceId)) {
-      return res.status(400).json({ message: "Invalid serviceId" });
+      return res.status(400).json({ message: 'Invalid serviceId' });
     }
     if (!providerId || isNaN(providerId)) {
-      return res.status(403).json({ message: "Unauthorized: Only service owners can update" });
+      return res.status(403).json({ message: 'Unauthorized: Only service owners can update' });
     }
 
     // Check if the service exists and belongs to the authenticated provider
@@ -175,11 +169,11 @@ serviceController.updateServiceById = async (req, res, next) => {
     });
 
     if (!service) {
-      return res.status(404).json({ message: "Service not found" });
+      return res.status(404).json({ message: 'Service not found' });
     }
 
     if (service.providerId !== providerId) {
-      return res.status(403).json({ message: "Unauthorized: You can only update your own service" });
+      return res.status(403).json({ message: 'Unauthorized: You can only update your own service' });
     }
 
     // Update the service
@@ -191,7 +185,7 @@ serviceController.updateServiceById = async (req, res, next) => {
       },
     });
 
-    res.status(200).json({ message: "Service updated successfully", service: updatedService });
+    res.status(200).json({ message: 'Service updated successfully', service: updatedService });
   } catch (error) {
     next(error);
   }

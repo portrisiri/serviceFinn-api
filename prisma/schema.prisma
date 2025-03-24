@@ -73,7 +73,13 @@ model Provider {
   qualificationVerification Boolean?       @default(false)
   companyVerification       Boolean?       @default(false)
   skills                    String?
-  availability              String?
+  sunday                    Json?
+  monday                    Json?
+  tuesday                   Json?
+  wednesday                 Json?
+  thursday                  Json?
+  friday                    Json?
+  saturday                  Json?
   profilePicture            String?
   providerRating            Float?
   latitude                  Decimal?
@@ -85,16 +91,22 @@ model Provider {
   revieweeRating            RatingReview[] @relation("Reviewee")
   penaltyProvider           Penalty[]      @relation("PenaltyProvider")
   Documents                 Documents[]
+  address                   String
+  bankName                  String?
+  bankAccountNO             String?
+  bankAccountNam            String?
 }
 
 model Service {
-  serviceId  Int       @id @default(autoincrement())
-  providerId String
-  price      Decimal?
-  provider   Provider  @relation(fields: [providerId], references: [providerId])
-  booking    Booking[]
-  subCatId   Int
-  subCatName Category  @relation(fields: [subCatId], references: [subCatId])
+  serviceId   Int       @id @default(autoincrement())
+  providerId  String
+  price       Decimal?
+  provider    Provider  @relation(fields: [providerId], references: [providerId])
+  booking     Booking[]
+  subCatId    Int
+  subCatName  Category  @relation(fields: [subCatId], references: [subCatId])
+  shopDetails String?
+  shopPicture String?
 }
 
 model Admin {
@@ -160,7 +172,8 @@ model RatingReview {
   comment     String?
   image       String?
   bookingId   Int
-  createdAt   DateTime
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
   type        ReviewType
   isHidden    Boolean
   reviewer    User?      @relation("Reviewer", fields: [reviewerId], references: [userId])
