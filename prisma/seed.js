@@ -1,5 +1,6 @@
 const prisma = require('../models/index');
 const providerData = require('./seedProvider');
+const serviceData = require('./seedService');
 // sample data here
 
 const userData = [
@@ -299,41 +300,6 @@ const categoryData = [
     categoryIcon: 'Icon7',
     subCatId: 72,
     subCatName: 'General Gardening',
-  },
-];
-
-const serviceData = [
-  {
-    providerId: 'P10000BKK',
-    subCatId: 11,
-  },
-  {
-    providerId: 'P10001BKK',
-    subCatId: 12,
-  },
-  {
-    providerId: 'P10002BKK',
-    subCatId: 21,
-  },
-  {
-    providerId: 'P10003BKK',
-    subCatId: 22,
-  },
-  {
-    providerId: 'P10004BKK',
-    subCatId: 23,
-  },
-  {
-    providerId: 'P10005BKK',
-    subCatId: 24,
-  },
-  {
-    providerId: 'P10006BKK',
-    subCatId: 31,
-  },
-  {
-    providerId: 'P10007BKK',
-    subCatId: 32,
   },
 ];
 
@@ -807,7 +773,7 @@ async function seedDatabase() {
   });
 
   await prisma.service.createMany({
-    data: serviceData,
+    data: serviceData.serviceData,
   });
 }
 
