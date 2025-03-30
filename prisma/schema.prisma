@@ -72,7 +72,7 @@ model Provider {
   personalVerification      Boolean?       @default(false)
   qualificationVerification Boolean?       @default(false)
   companyVerification       Boolean?       @default(false)
-  skills                    String?
+  skills                    Int
   sunday                    Json?
   monday                    Json?
   tuesday                   Json?

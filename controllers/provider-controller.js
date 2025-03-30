@@ -16,20 +16,29 @@ providerController.getAllProviders = async (req, res, next) => {
           subCatId,
         },
       });
-
-    const providers = await prisma.provider.findMany({
+    const count = await prisma.provider.count({
+      where: providerFilters,
+    });
+    const results = await prisma.provider.findMany({
       orderBy: {
         [orderBy]: sort,
       },
       where: providerFilters,
-      include: { service: true },
+      include: {
+        service: {
+          include: {
+            subCatName: true,
+          },
+        },
+      },
       skip,
       take,
     });
     res.status(200).json({
       success: true,
       message: 'hello',
-      providers,
+      results,
+      count,
     });
   } catch (error) {
     next(error);
@@ -58,8 +67,9 @@ providerController.getFilteredProviders = async (req, res, next) => {
     const targetDay = date
       ? new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date(date)).toLowerCase()
       : null;
-    const dayFilter = targetDay ? `Provider.${targetDay} = true` : '';
-    // dayFilter && whereArray.push(dayFilter);
+    const dayFilter = targetDay ? `Provider.${targetDay} IS NOT NULL` : '';
+    dayFilter && whereArray.push(dayFilter);
+    console.log('targetDay', targetDay);
     // Rating
     const ratingFilter = rating ? `Provider.providerRating >= ${rating}` : '';
     ratingFilter && whereArray.push(ratingFilter);
@@ -72,9 +82,17 @@ providerController.getFilteredProviders = async (req, res, next) => {
 
     // ****************************************************************************************
     const sortFilter = sort ? `${sort}` : '';
-    const orderByFilter = orderBy ? `ORDER BY ${orderBy} ${sortFilter}` : '';
+    // const orderByFilter = orderBy ? `ORDER BY ${orderBy} ${sortFilter}` : '';
+    let orderByFilter = '';
+    if (orderBy == 'PROVIDERRATING') {
+      console.log('Sort by provider Rating desc');
+      orderByFilter = `ORDER BY provider.providerRating ${sortFilter}`;
+    } else {
+      orderByFilter = `ORDER BY distance ${sortFilter}`;
+    }
     const offsetFilter = skip ? `OFFSET ${skip}` : '';
     const limitFilter = take ? `LIMIT ${take} ${offsetFilter}` : '';
+    console.log(orderByFilter);
 
     // Construct the filter object
     // const filters = {};
@@ -147,11 +165,11 @@ providerController.getFilteredProviders = async (req, res, next) => {
 providerController.getProviderById = async (req, res, next) => {
   try {
     const { id } = req.params; // Get providerId from URL params
-    console.log(id)
+    console.log(id);
     // Find a provider with the specific id
     const provider = await prisma.provider.findUnique({
       where: {
-        providerId: id // Assuming `id` is passed as a string and needs to be parsed to an integer
+        providerId: id, // Assuming `id` is passed as a string and needs to be parsed to an integer
       },
     });
     if (!provider) {
@@ -175,8 +193,18 @@ providerController.getProviderById = async (req, res, next) => {
 providerController.updateProviderProfile = async (req, res, next) => {
   try {
     const { id } = req.params; // Get providerId from URL params
-    const { firstName, lastName, email, phoneNumber, companyName, profilePicture, skills, availability, latitude, longitude  } =
-      req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      companyName,
+      profilePicture,
+      skills,
+      availability,
+      latitude,
+      longitude,
+    } = req.body;
 
     // Get the current authenticated user ID (from Clerk session)
     const userId = req.auth.userId; // Assuming Clerk middleware is set up
@@ -218,7 +246,7 @@ providerController.updateProviderProfile = async (req, res, next) => {
         skills,
         availability,
         latitude,
-        longitude
+        longitude,
       },
     });
 
